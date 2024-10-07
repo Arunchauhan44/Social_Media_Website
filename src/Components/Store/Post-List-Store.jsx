@@ -1,4 +1,4 @@
-import { createContext, useEffect, useReducer, useState } from "react";
+import { createContext, useCallback, useEffect, useReducer, useState } from "react";
 
 export const PostList = createContext({
   postList: [],
@@ -6,7 +6,7 @@ export const PostList = createContext({
   deletePost: () => {},
   addInitialPosts: () => {},
 });
-
+ 
 const postListReducer = (currPostList, action) => {
   let newPostList = currPostList;
   if (action.type === "DELETE_POST") {
@@ -27,18 +27,11 @@ const PostListProvider = ({ children }) => {
     []
   );
 
-  const addPost = (userId, postTitle, postBody, reactions, tags) => {
+  const addPost = (post) => {
+    console.log("post added");
     dispatchPostList({
       type: "ADD_POST",
-      payload: {
-        id: Date.now(),
-        tittle: postTitle,
-        body: postBody,
-        reactions: reactions,
-        userId: userId,
-        tags: tags,
-        
-      },
+      payload: post,
     });
   };
 
@@ -51,7 +44,8 @@ const PostListProvider = ({ children }) => {
     });
   };
 
-  const deletePost = (postId) => {
+  const deletePost = useCallback( 
+    (postId) => {
     console.log(`Delete post called for ${postId}`);
     dispatchPostList({
       type: "DELETE_POST",
@@ -59,7 +53,9 @@ const PostListProvider = ({ children }) => {
         postId,
       },
     });
-  };
+  },
+  [dispatchPostList]
+);
 
   return (
     <PostList.Provider
@@ -70,23 +66,23 @@ const PostListProvider = ({ children }) => {
   );
 };
 
-const DEFAULT_POST_LIST = [
-  {
-    id: "1",
-    title: "Going to Mumbai",
-    body: "Hi Friends, I am going to Mumbai for my vacations. Hope to enjoy a lot. Peace out.",
-    reactions: 2,
-    userId: "user-9",
-    tags: ["vacation", "Mumbai", "Enjoying"],
-  },
-  {
-    id: "2",
-    title: "Paas ho bhai",
-    body: "4 saal ki masti k baad bhi ho gaye hain paas. Hard to believe.",
-    reactions: 15,
-    userId: "user-12",
-    tags: ["Graduating", "Unbelievable"],
-  },
-];
+// const DEFAULT_POST_LIST = [
+//   {
+//     id: "1",
+//     title: "Going to Mumbai",
+//     body: "Hi Friends, I am going to Mumbai for my vacations. Hope to enjoy a lot. Peace out.",
+//     reactions: 2,
+//     userId: "user-9",
+//     tags: ["vacation", "Mumbai", "Enjoying"],
+//   },
+//   {
+//     id: "2",
+//     title: "Paas ho bhai",
+//     body: "4 saal ki masti k baad bhi ho gaye hain paas. Hard to believe.",
+//     reactions: 15,
+//     userId: "user-12",
+//     tags: ["Graduating", "Unbelievable"],
+//   },
+// ];
 
 export default PostListProvider;
